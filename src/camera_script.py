@@ -7,7 +7,7 @@ while True:
     
     cv2.imshow('MacBook Camera', frame)
 
-    if cv2.waitKey(1) == ord('q'):
+    if cv2.waitKey(1) == ord('x'):
         break
 
 cv2.release()
