@@ -1,2 +1,3 @@
 .venv/
 movenet_thunder.tflite
+.DS_Store
