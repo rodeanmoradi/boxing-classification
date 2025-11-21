@@ -10,18 +10,28 @@ def preprocess(frame):
 
     return img
 
+def runInference(inputDetails, outputDetails):
+    interpreter.set_tensor(inputDetails[0]['index'], img)
+    interpreter.invoke()
+    output = interpreter.get_tensor(outputDetails[0]['index'])
+
+    return output
+
 cam = cv2.VideoCapture(0)
 
-# Load MoveNet Thunder
+# Deploy MoveNet Thunder
 path = 'models/movenet/movenet_thunder.tflite'
 interpreter = tf.lite.Interpreter(model_path=path)
 interpreter.allocate_tensors()
+inputDetails = interpreter.get_input_details()
+outputDetails = interpreter.get_output_details()
 
-# Display webcame
+# Display webcam
 while True:
     ret, frame = cam.read()
     
-    preprocess(frame)
+    img = preprocess(frame)
+    output = runInference(inputDetails, outputDetails)
 
     cv2.imshow('MacBook Camera', frame)
 
