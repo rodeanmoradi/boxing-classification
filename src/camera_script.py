@@ -2,7 +2,6 @@ import cv2
 import tensorflow as tf
 import numpy as np
 
-# Turn original image tensor into input format
 def preprocess(frame):
     img = cv2.resize(frame, (256, 256))
     img = img.astype(np.float32)
@@ -19,19 +18,20 @@ def runInference(inputDetails, outputDetails):
 
 cam = cv2.VideoCapture(0)
 
-# Deploy MoveNet Thunder
+# Deploy MoveNet Thunder model
 path = 'models/movenet/movenet_thunder.tflite'
 interpreter = tf.lite.Interpreter(model_path=path)
 interpreter.allocate_tensors()
 inputDetails = interpreter.get_input_details()
 outputDetails = interpreter.get_output_details()
 
-# Display webcam
 while True:
     ret, frame = cam.read()
     
     img = preprocess(frame)
     output = runInference(inputDetails, outputDetails)
+
+    #TODO: Use output to draw keypoints
 
     cv2.imshow('MacBook Camera', frame)
 
