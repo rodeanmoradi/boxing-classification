@@ -2,7 +2,7 @@ import cv2
 import tensorflow as tf
 import numpy as np
 
-def preprocess(frame):
+def preProcess(frame):
     img = cv2.resize(frame, (256, 256))
     img = img.astype(np.float32)
     img = np.expand_dims(img, axis=0)
@@ -32,6 +32,7 @@ while True:
     output = runInference(inputDetails, outputDetails)
 
     #TODO: Use output to draw keypoints
+
 
     cv2.imshow('MacBook Camera', frame)
 
