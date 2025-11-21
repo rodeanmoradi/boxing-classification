@@ -28,7 +28,7 @@ outputDetails = interpreter.get_output_details()
 while True:
     ret, frame = cam.read()
     
-    img = preprocess(frame)
+    img = preProcess(frame)
     output = runInference(inputDetails, outputDetails)
 
     #TODO: Use output to draw keypoints
