@@ -4,7 +4,7 @@ import numpy as np
 
 def preProcess(frame):
     img = cv2.resize(frame, (256, 256))
-    img = img.astype(np.float32)
+    img = img.astype(np.uint8)
     img = np.expand_dims(img, axis=0)
 
     return img
@@ -16,9 +16,10 @@ def runInference(inputDetails, outputDetails):
 
     return output
 
-cam = cv2.VideoCapture(0)
+# Might have to switch to cv2.VideoCapture(0) if fails to read
+cam = cv2.VideoCapture(1)
 
-# Deploy MoveNet Thunder model
+# Deploy MoveNet Thunder model, TODO: create deploy(path) function that returns in, out details
 path = 'models/movenet/movenet_thunder.tflite'
 interpreter = tf.lite.Interpreter(model_path=path)
 interpreter.allocate_tensors()
@@ -27,12 +28,26 @@ outputDetails = interpreter.get_output_details()
 
 while True:
     ret, frame = cam.read()
+
+    camHeight = frame.shape[0]
+    camWidth = frame.shape[1]
     
+    if not ret:
+        print("Failed to read")
+        break
+
     img = preProcess(frame)
     output = runInference(inputDetails, outputDetails)
 
-    #TODO: Use output to draw keypoints
-
+    #Draw keypoints, TODO: smoothing
+    confidenceThreshold = 0.3
+    for i in range(17):
+        point = output[0, 0, i, :]
+        yPoint = int(point[0] * camHeight)
+        xPoint = int(point[1] * camWidth)
+        confidence = point[2]
+        if confidence > confidenceThreshold:
+            cv2.circle(frame, (xPoint, yPoint), 5, (255, 0, 0), -1)
 
     cv2.imshow('MacBook Camera', frame)
 
