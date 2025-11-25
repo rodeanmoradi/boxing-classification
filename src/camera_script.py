@@ -4,7 +4,6 @@ import numpy as np
 
 def preProcess(frame):
     img = cv2.resize(frame, (256, 256))
-    img = img.astype(np.uint8)
     img = np.expand_dims(img, axis=0)
 
     return img
@@ -18,19 +17,19 @@ def runInference(inputDetails, outputDetails):
 
 # Might have to switch to cv2.VideoCapture(0) if fails to read
 cam = cv2.VideoCapture(1)
+camHeight = 720
+camWidth = 1280
 
-# Deploy MoveNet Thunder model, TODO: create deploy(path) function that returns in, out details
+# Deploy MoveNet Thunder model, TODO: def deploy() that returns in, out details
 path = 'models/movenet/movenet_thunder.tflite'
 interpreter = tf.lite.Interpreter(model_path=path)
 interpreter.allocate_tensors()
 inputDetails = interpreter.get_input_details()
 outputDetails = interpreter.get_output_details()
 
+allPoints = []
 while True:
     ret, frame = cam.read()
-
-    camHeight = frame.shape[0]
-    camWidth = frame.shape[1]
     
     if not ret:
         print("Failed to read")
@@ -39,8 +38,9 @@ while True:
     img = preProcess(frame)
     output = runInference(inputDetails, outputDetails)
 
-    #Draw keypoints, TODO: smoothing
+    #Draw keypoints, TODO: implement moving average for smoothing
     confidenceThreshold = 0.3
+    lastPoints = []
     for i in range(17):
         point = output[0, 0, i, :]
         yPoint = int(point[0] * camHeight)
@@ -48,6 +48,9 @@ while True:
         confidence = point[2]
         if confidence > confidenceThreshold:
             cv2.circle(frame, (xPoint, yPoint), 5, (255, 0, 0), -1)
+        lastPoints.append((xPoint, yPoint))
+    allPoints.append(lastPoints)
+    arr = np.array(allPoints)
 
     cv2.imshow('MacBook Camera', frame)
 
