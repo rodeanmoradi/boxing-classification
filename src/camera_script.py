@@ -27,7 +27,8 @@ interpreter.allocate_tensors()
 inputDetails = interpreter.get_input_details()
 outputDetails = interpreter.get_output_details()
 
-allPoints = []
+N = 5
+ringBuffer = np.zeros((N, 17, 2))
 while True:
     ret, frame = cam.read()
     
@@ -40,7 +41,6 @@ while True:
 
     #Draw keypoints, TODO: implement moving average for smoothing
     confidenceThreshold = 0.3
-    lastPoints = []
     for i in range(17):
         point = output[0, 0, i, :]
         yPoint = int(point[0] * camHeight)
@@ -48,9 +48,7 @@ while True:
         confidence = point[2]
         if confidence > confidenceThreshold:
             cv2.circle(frame, (xPoint, yPoint), 5, (255, 0, 0), -1)
-        lastPoints.append((xPoint, yPoint))
-    allPoints.append(lastPoints)
-    arr = np.array(allPoints)
+        
 
     cv2.imshow('MacBook Camera', frame)
 
