@@ -29,6 +29,7 @@ outputDetails = interpreter.get_output_details()
 
 N = 5
 ringBuffer = np.zeros((N, 17, 2))
+curFrame = 0
 while True:
     ret, frame = cam.read()
     
@@ -39,7 +40,7 @@ while True:
     img = preProcess(frame)
     output = runInference(inputDetails, outputDetails)
 
-    #Draw keypoints, TODO: implement moving average for smoothing
+    #Draw keypoints, TODO: implement moving avg for smoothing
     confidenceThreshold = 0.3
     for i in range(17):
         point = output[0, 0, i, :]
@@ -48,7 +49,10 @@ while True:
         confidence = point[2]
         if confidence > confidenceThreshold:
             cv2.circle(frame, (xPoint, yPoint), 5, (255, 0, 0), -1)
-        
+        ringBuffer[curFrame, i, 0] = xPoint
+        ringBuffer[curFrame, i, 1] = yPoint
+    lastFrame = curFrame
+    curFrame = (lastFrame + 1) % N
 
     cv2.imshow('MacBook Camera', frame)
 
