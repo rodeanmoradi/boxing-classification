@@ -40,7 +40,9 @@ while True:
     img = preProcess(frame)
     output = runInference(inputDetails, outputDetails)
 
-    #Draw keypoints, TODO: implement moving avg for smoothing
+    # Draw keypoints 
+    # TODO: Implement moving avg for smoothing
+    # TODO: Handle low confidence levels
     confidenceThreshold = 0.3
     for i in range(17):
         point = output[0, 0, i, :]
