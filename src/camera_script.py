@@ -2,35 +2,41 @@ import cv2
 import tensorflow as tf
 import numpy as np
 
+N = 5
+curFrame = 0
+lastFrame = 0
+camHeight = 720
+camWidth = 1280
+path = 'models/movenet/movenet_thunder.tflite'
+interpreter = tf.lite.Interpreter(model_path=path)
+
 def preProcess(frame):
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     img = cv2.resize(frame, (256, 256))
     img = np.expand_dims(img, axis=0)
 
     return img
 
-def runInference(inputDetails, outputDetails):
+def runInference(inputDetails, outputDetails, img):
     interpreter.set_tensor(inputDetails[0]['index'], img)
     interpreter.invoke()
     output = interpreter.get_tensor(outputDetails[0]['index'])
 
     return output
 
+def deployMovenet(interpreter):
+    interpreter.allocate_tensors()
+    inputDetails = interpreter.get_input_details()
+    outputDetails = interpreter.get_output_details()
+    
+    return (inputDetails, outputDetails)
+
 # Might have to switch to cv2.VideoCapture(0) if fails to read
 cam = cv2.VideoCapture(1)
-camHeight = 720
-camWidth = 1280
 
-# Deploy MoveNet Thunder model, TODO: def deploy() that returns in, out details
-path = 'models/movenet/movenet_thunder.tflite'
-interpreter = tf.lite.Interpreter(model_path=path)
-interpreter.allocate_tensors()
-inputDetails = interpreter.get_input_details()
-outputDetails = interpreter.get_output_details()
+inputDetails, outputDetails = deployMovenet(interpreter)
 
-N = 5
 ringBuffer = np.zeros((N, 17, 2))
-curFrame = 0
-lastFrame = 0
 while True:
     ret, frame = cam.read()
     
@@ -39,7 +45,7 @@ while True:
         break
 
     img = preProcess(frame)
-    output = runInference(inputDetails, outputDetails)
+    output = runInference(inputDetails, outputDetails, img)
 
     # Draw keypoints 
     confidenceThreshold = 0.3
