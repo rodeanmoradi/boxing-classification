@@ -47,7 +47,7 @@ while True:
     img = preProcess(frame)
     output = runInference(inputDetails, outputDetails, img)
 
-    # Draw keypoints 
+    # Moving average for smoothing, TODO: make function
     confidenceThreshold = 0.3
     lastFrame = curFrame
     curFrame = (curFrame + 1) % N
@@ -65,6 +65,7 @@ while True:
             ringBuffer[curFrame, i, 1] = ringBuffer[lastFrame, i, 1]
     smoothed = np.mean(ringBuffer, axis=0)
 
+    # Draw 
     for i in range(17):
         cv2.circle(frame, (int(smoothed[i][0]), int(smoothed[i][1])), 7, (255, 0, 0), -1)
 
