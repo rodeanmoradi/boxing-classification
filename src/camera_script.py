@@ -30,6 +30,7 @@ outputDetails = interpreter.get_output_details()
 N = 5
 ringBuffer = np.zeros((N, 17, 2))
 curFrame = 0
+lastFrame = 0
 while True:
     ret, frame = cam.read()
     
@@ -41,20 +42,25 @@ while True:
     output = runInference(inputDetails, outputDetails)
 
     # Draw keypoints 
-    # TODO: Implement moving avg for smoothing
-    # TODO: Handle low confidence levels
     confidenceThreshold = 0.3
+    lastFrame = curFrame
+    curFrame = (curFrame + 1) % N
     for i in range(17):
         point = output[0, 0, i, :]
-        yPoint = int(point[0] * camHeight)
-        xPoint = int(point[1] * camWidth)
+        yPoint = point[0] * camHeight
+        xPoint = point[1] * camWidth
         confidence = point[2]
+        
         if confidence > confidenceThreshold:
-            cv2.circle(frame, (xPoint, yPoint), 5, (255, 0, 0), -1)
-        ringBuffer[curFrame, i, 0] = xPoint
-        ringBuffer[curFrame, i, 1] = yPoint
-    lastFrame = curFrame
-    curFrame = (lastFrame + 1) % N
+            ringBuffer[curFrame, i, 0] = xPoint
+            ringBuffer[curFrame, i, 1] = yPoint
+        else:
+            ringBuffer[curFrame, i, 0] = ringBuffer[lastFrame, i, 0]
+            ringBuffer[curFrame, i, 1] = ringBuffer[lastFrame, i, 1]
+    smoothed = np.mean(ringBuffer, axis=0)
+
+    for i in range(17):
+        cv2.circle(frame, (int(smoothed[i][0]), int(smoothed[i][1])), 7, (255, 0, 0), -1)
 
     cv2.imshow('MacBook Camera', frame)
 
