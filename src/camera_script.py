@@ -1,8 +1,9 @@
+# TODO: Use classes
 import cv2
 import tensorflow as tf
 import numpy as np
 
-N = 5
+N = 3
 curFrame = 0
 lastFrame = 0
 camHeight = 720
@@ -47,7 +48,7 @@ while True:
     img = preProcess(frame)
     output = runInference(inputDetails, outputDetails, img)
 
-    # Moving average for smoothing, TODO: make function
+    # Moving average for smoothing
     confidenceThreshold = 0.3
     lastFrame = curFrame
     curFrame = (curFrame + 1) % N
