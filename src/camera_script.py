@@ -8,7 +8,7 @@ curFrame = 0
 lastFrame = 0
 camHeight = 720
 camWidth = 1280
-path = 'models/movenet/movenet_thunder.tflite'
+path = 'models/movenet/movenet_lightning.tflite'
 interpreter = tf.lite.Interpreter(model_path=path)
 
 def preProcess(frame):
