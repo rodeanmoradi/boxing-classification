@@ -33,7 +33,7 @@ def deployMovenet(interpreter):
     return (inputDetails, outputDetails)
 
 # Might have to switch to cv2.VideoCapture(0) if fails to read
-cam = cv2.VideoCapture(1)
+cam = cv2.VideoCapture(0)
 
 inputDetails, outputDetails = deployMovenet(interpreter)
 
