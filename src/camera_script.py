@@ -13,7 +13,8 @@ interpreter = tf.lite.Interpreter(model_path=path)
 
 def preProcess(frame):
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    img = cv2.resize(frame, (256, 256))
+    img = cv2.resize(frame, (192, 192))
+    img = img.astype(np.float32)
     img = np.expand_dims(img, axis=0)
 
     return img
@@ -48,7 +49,7 @@ while True:
     img = preProcess(frame)
     output = runInference(inputDetails, outputDetails, img)
 
-    # Moving average for smoothing
+    # Moving average for smoothing TODO: Switch to exponential moving average
     confidenceThreshold = 0.3
     lastFrame = curFrame
     curFrame = (curFrame + 1) % N
@@ -66,7 +67,7 @@ while True:
             ringBuffer[curFrame, i, 1] = ringBuffer[lastFrame, i, 1]
     smoothed = np.mean(ringBuffer, axis=0)
 
-    # Draw 
+    # Draw TODO: Draw connections too
     for i in range(17):
         cv2.circle(frame, (int(smoothed[i][0]), int(smoothed[i][1])), 7, (255, 0, 0), -1)
 
