@@ -1,4 +1,4 @@
-# TODO: Use classes
+# TODO: Create classes
 import cv2
 import tensorflow as tf
 import numpy as np
@@ -33,7 +33,7 @@ def deployMovenet(interpreter):
     
     return (inputDetails, outputDetails)
 
-# Might have to switch to cv2.VideoCapture(0) if fails to read
+# Switch to cv2.VideoCapture(0) if fails to read
 cam = cv2.VideoCapture(0)
 
 inputDetails, outputDetails = deployMovenet(interpreter)
@@ -49,7 +49,7 @@ while True:
     img = preProcess(frame)
     output = runInference(inputDetails, outputDetails, img)
 
-    # Moving average for smoothing TODO: Switch to exponential moving average
+    # TODO: Switch to exponential moving average
     confidenceThreshold = 0.3
     lastFrame = curFrame
     curFrame = (curFrame + 1) % N
@@ -67,7 +67,7 @@ while True:
             ringBuffer[curFrame, i, 1] = ringBuffer[lastFrame, i, 1]
     smoothed = np.mean(ringBuffer, axis=0)
 
-    # Draw TODO: Draw connections too
+    # TODO: Draw connections too
     for i in range(17):
         cv2.circle(frame, (int(smoothed[i][0]), int(smoothed[i][1])), 7, (255, 0, 0), -1)
 
