@@ -33,8 +33,8 @@ def deployMovenet(interpreter):
     
     return (inputDetails, outputDetails)
 
-# Switch to cv2.VideoCapture(0) if fails to read
-cam = cv2.VideoCapture(0)
+# Switch to cv2.VideoCapture(0) or cv2.VideoCapture(1) if fails to read
+cam = cv2.VideoCapture(1)
 
 inputDetails, outputDetails = deployMovenet(interpreter)
 
@@ -67,9 +67,29 @@ while True:
             ringBuffer[curFrame, i, 1] = ringBuffer[lastFrame, i, 1]
     smoothed = np.mean(ringBuffer, axis=0)
 
-    # TODO: Draw connections too
+    connections = [
+        (0, 1),
+        (0, 2),
+        (1, 3),
+        (2, 4),
+        (5, 6),
+        (5, 7),
+        (5, 11),
+        (6, 8),
+        (6, 12),
+        (7, 9),
+        (8, 10),
+        (11, 13),
+        (12, 14),
+        (13, 15),
+        (14, 16)
+    ]
+    
+    # Draw keypoints and connections
+    for (start, end) in connections:
+        cv2.line(frame, (int(smoothed[start][0]), int(smoothed[start][1])), (int(smoothed[end][0]), int(smoothed[end][1])), (255, 0, 0), 3)
     for i in range(17):
-        cv2.circle(frame, (int(smoothed[i][0]), int(smoothed[i][1])), 7, (255, 0, 0), -1)
+        cv2.circle(frame, (int(smoothed[i][0]), int(smoothed[i][1])), 8, (255, 0, 0), -1)
 
     cv2.imshow('MacBook Camera', frame)
 
