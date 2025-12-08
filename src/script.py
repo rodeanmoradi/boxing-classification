@@ -3,6 +3,7 @@ import cv2
 import tensorflow as tf
 import numpy as np
 
+# TODO: Make header file
 N = 3
 curFrame = 0
 lastFrame = 0
@@ -10,6 +11,23 @@ camHeight = 720
 camWidth = 1280
 path = 'models/movenet/movenet_lightning.tflite'
 interpreter = tf.lite.Interpreter(model_path=path)
+connections = [
+        (0, 1),
+        (0, 2),
+        (1, 3),
+        (2, 4),
+        (5, 6),
+        (5, 7),
+        (5, 11),
+        (6, 8),
+        (6, 12),
+        (7, 9),
+        (8, 10),
+        (11, 13),
+        (12, 14),
+        (13, 15),
+        (14, 16)
+    ]
 
 def preProcess(frame):
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -35,28 +53,9 @@ def deployMovenet(interpreter):
 
 # Switch to cv2.VideoCapture(0) or cv2.VideoCapture(1) if fails to read
 cam = cv2.VideoCapture(1)
-
 inputDetails, outputDetails = deployMovenet(interpreter)
-
-connections = [
-        (0, 1),
-        (0, 2),
-        (1, 3),
-        (2, 4),
-        (5, 6),
-        (5, 7),
-        (5, 11),
-        (6, 8),
-        (6, 12),
-        (7, 9),
-        (8, 10),
-        (11, 13),
-        (12, 14),
-        (13, 15),
-        (14, 16)
-    ]
-
 ringBuffer = np.zeros((N, 17, 2))
+
 while True:
     ret, frame = cam.read()
     
@@ -67,7 +66,8 @@ while True:
     img = preProcess(frame)
     output = runInference(inputDetails, outputDetails, img)
 
-    # TODO: Switch to exponential moving average
+    # TODO: Exponential moving average
+    # Moving average
     confidenceThreshold = 0.3
     lastFrame = curFrame
     curFrame = (curFrame + 1) % N
