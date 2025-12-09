@@ -4,9 +4,7 @@ import tensorflow as tf
 import numpy as np
 
 # TODO: Make header file
-N = 3
-curFrame = 0
-lastFrame = 0
+a = 0.5
 camHeight = 720
 camWidth = 1280
 path = 'models/movenet/movenet_lightning.tflite'
@@ -52,9 +50,9 @@ def deployMovenet(interpreter):
     return (inputDetails, outputDetails)
 
 # Switch to cv2.VideoCapture(0) or cv2.VideoCapture(1) if fails to read
-cam = cv2.VideoCapture(1)
+cam = cv2.VideoCapture(0)
 inputDetails, outputDetails = deployMovenet(interpreter)
-ringBuffer = np.zeros((N, 17, 2))
+smoothed = np.zeros((1, 17, 2))
 
 while True:
     ret, frame = cam.read()
@@ -66,11 +64,8 @@ while True:
     img = preProcess(frame)
     output = runInference(inputDetails, outputDetails, img)
 
-    # TODO: Exponential moving average
-    # Moving average
+    # TODO: Implement One Euro filter
     confidenceThreshold = 0.3
-    lastFrame = curFrame
-    curFrame = (curFrame + 1) % N
     for i in range(17):
         point = output[0, 0, i, :]
         yPoint = point[0] * camHeight
@@ -78,18 +73,14 @@ while True:
         confidence = point[2]
         
         if confidence > confidenceThreshold:
-            ringBuffer[curFrame, i, 0] = xPoint
-            ringBuffer[curFrame, i, 1] = yPoint
-        else:
-            ringBuffer[curFrame, i, 0] = ringBuffer[lastFrame, i, 0]
-            ringBuffer[curFrame, i, 1] = ringBuffer[lastFrame, i, 1]
-    smoothed = np.mean(ringBuffer, axis=0)
+            smoothed[0, i, 0] = (xPoint * a) + smoothed[0, i, 0] * (1 - a)
+            smoothed[0, i, 1] = (yPoint * a) + smoothed[0, i, 1] * (1 - a)
 
     # Draw keypoints and connections
     for (start, end) in connections:
-        cv2.line(frame, (int(smoothed[start][0]), int(smoothed[start][1])), (int(smoothed[end][0]), int(smoothed[end][1])), (255, 0, 0), 3)
+        cv2.line(frame, (int(smoothed[0, start, 0]), int(smoothed[0, start, 1])), (int(smoothed[0, end, 0]), int(smoothed[0, end, 1])), (255, 0, 0), 3)
     for i in range(17):
-        cv2.circle(frame, (int(smoothed[i][0]), int(smoothed[i][1])), 8, (255, 0, 0), -1)
+        cv2.circle(frame, (int(smoothed[0, i, 0]), int(smoothed[0, i, 1])), 8, (255, 0, 0), -1)
 
     cv2.imshow('MacBook Camera', frame)
 
