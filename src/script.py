@@ -1,12 +1,14 @@
 import cv2
 import tensorflow as tf
 import numpy as np
+import time
 
 # TODO: Make config file
-# Pass 0 or 1 if it fails to read
-cam = cv2.VideoCapture(0)
+PI = 3.14
+cam = cv2.VideoCapture(1) # Pass 0 or 1
 frame_height = cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
 frame_width = cam.get(cv2.CAP_PROP_FRAME_WIDTH)
+prev_time = time.time()
 
 class PoseEstimator:
 
@@ -41,20 +43,49 @@ class SmoothingFilter:
 
     def __init__(self):
         self.confidence_threshold = 0.3
-        self.a = 0.5
+        self.b = 0.01
+        self.f_c_min = 0.5
+        self.f_c_d = 0.5
+        self.prev_point = np.zeros((1, 17, 2))
+        self.prev_speed = np.zeros((1, 17, 2))
         self.smoothed = np.zeros((1, 17, 2))
 
-    # TODO: Switch to One Euro filter
-    def filter(self, output, frame_height, frame_width):
+    # TODO: Implement One Euro filter
+    def filter(self, output, frame_height, frame_width, sampling_period):
+        
+        if sampling_period <= 0.00001: 
+            sampling_period = 0.016
+        
         for i in range(17):
             point = output[0, 0, i, :]
-            yPoint = point[0] * frame_height
-            xPoint = point[1] * frame_width
+            y_point = point[0] * frame_height
+            x_point = point[1] * frame_width
             confidence = point[2]
         
             if confidence > self.confidence_threshold:
-                self.smoothed[0, i, 0] = (xPoint * self.a) + self.smoothed[0, i, 0] * (1 - self.a)
-                self.smoothed[0, i, 1] = (yPoint * self.a) + self.smoothed[0, i, 1] * (1 - self.a)
+
+                # Smooth speed
+                x_dot_0 = (x_point - self.prev_point[0, i, 0]) / sampling_period
+                x_dot_1 = (y_point - self.prev_point[0, i, 1]) / sampling_period
+                a_d = 1 / (1 + (1 / (2 * PI * self.f_c_d * sampling_period)))
+                x_dot_hat_0 = x_dot_0 * a_d + self.prev_speed[0, i, 0] * (1 - a_d)
+                x_dot_hat_1 = x_dot_1 * a_d + self.prev_speed[0, i, 1] * (1 - a_d)
+
+                # Smooth position 
+                f_c_0 = self.f_c_min + self.b * abs(x_dot_hat_0)
+                a_0 = 1 / (1 + (1 / (2 * PI * f_c_0 * sampling_period)))
+                x_hat_0 = x_point * a_0 + self.smoothed[0, i, 0] * (1 - a_0)
+                f_c_1 = self.f_c_min + self.b * abs(x_dot_hat_1)
+                a_1 = 1 / (1 + (1 / (2 * PI * f_c_1 * sampling_period)))
+                x_hat_1 = y_point * a_1 + self.smoothed[0, i, 1] * (1 - a_1)
+
+                self.smoothed[0, i, 0] = x_hat_0
+                self.smoothed[0, i, 1] = x_hat_1
+
+                self.prev_speed[0, i, 0] = x_dot_hat_0
+                self.prev_speed[0, i, 1] = x_dot_hat_1
+                self.prev_point[0, i, 0] = x_point
+                self.prev_point[0, i, 1] = y_point 
 
         return self.smoothed
 
@@ -86,20 +117,25 @@ class Visualiser:
         for i in range(17):
             cv2.circle(frame, (int(smoothed[0, i, 0]), int(smoothed[0, i, 1])), 8, (255, 0, 0), -1)
 
-movenet_thunder = PoseEstimator('models/movenet/movenet_lightning.tflite')
+movenet_lightning = PoseEstimator('models/movenet/movenet_lightning.tflite')
 moving_average = SmoothingFilter()
 visualiser = Visualiser()
 
+# TODO: Make main function
 while True:
+    current_time = time.time()
+    frame_time = current_time - prev_time
+    prev_time = current_time
+    
     ret, frame = cam.read()
     
     if not ret:
         print("Failed to read")
         break
 
-    output = movenet_thunder.detect(frame)
+    output = movenet_lightning.detect(frame)
 
-    smoothed = moving_average.filter(output, frame_height, frame_width)
+    smoothed = moving_average.filter(output, frame_height, frame_width, frame_time)
 
     visualiser.draw_keypoints(frame, smoothed)
 
