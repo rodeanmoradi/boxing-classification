@@ -43,14 +43,14 @@ class SmoothingFilter:
 
     def __init__(self):
         self.confidence_threshold = 0.3
-        self.b = 0.01
-        self.f_c_min = 0.5
+        self.b = 5.0
+        self.f_c_min = 1.0
         self.f_c_d = 0.5
         self.prev_point = np.zeros((1, 17, 2))
         self.prev_speed = np.zeros((1, 17, 2))
         self.smoothed = np.zeros((1, 17, 2))
 
-    # TODO: Implement One Euro filter
+    # TODO: Tune and optimize
     def filter(self, output, frame_height, frame_width, sampling_period):
         
         if sampling_period <= 0.00001: 
@@ -84,6 +84,7 @@ class SmoothingFilter:
 
                 self.prev_speed[0, i, 0] = x_dot_hat_0
                 self.prev_speed[0, i, 1] = x_dot_hat_1
+                
                 self.prev_point[0, i, 0] = x_point
                 self.prev_point[0, i, 1] = y_point 
 
@@ -133,9 +134,7 @@ while True:
         print("Failed to read")
         break
 
-    output = movenet_lightning.detect(frame)
-
-    smoothed = moving_average.filter(output, frame_height, frame_width, frame_time)
+    smoothed = moving_average.filter(movenet_lightning.detect(frame), frame_height, frame_width, frame_time)
 
     visualiser.draw_keypoints(frame, smoothed)
 
