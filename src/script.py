@@ -50,12 +50,20 @@ class SmoothingFilter:
         self.prev_speed = np.zeros((1, 17, 2))
         self.smoothed = np.zeros((1, 17, 2))
 
-    # TODO: Tune and optimize
+    # TODO: Tune and use NumPy vectorization to improve latency
     def filter(self, output, frame_height, frame_width, sampling_period):
         
         if sampling_period <= 0.00001: 
             sampling_period = 0.016
         
+        # NumPy vectorization
+        # Slice output -> big array of all output points
+        points = output[0, 0, :, :].copy() # size is 17x3
+        # Check confidence scores
+        # Smooth speed all at once
+        # Smooth position all at once
+        # Output smoothed
+
         for i in range(17):
             point = output[0, 0, i, :]
             y_point = point[0] * frame_height
