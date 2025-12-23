@@ -1,5 +1,3 @@
-## TODO: Create circular buffer for last 30 frames
-## TODO: Normalize points
 import cv2
 import tensorflow as tf
 import numpy as np
@@ -115,6 +113,7 @@ class Buffer:
         self.buffer[self.index] = normalized
         self.index = (self.index + 1) % self.n
     
+    # TODO: Check if buffer is filled before rolling
     def order_buffer(self):
         ordered = np.roll(self.buffer, -self.index, axis=0)
 
