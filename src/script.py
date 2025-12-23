@@ -1,3 +1,5 @@
+## TODO: Create circular buffer for last 30 frames
+## TODO: Normalize points
 import cv2
 import tensorflow as tf
 import numpy as np
@@ -41,6 +43,7 @@ class PoseEstimator:
 
 class SmoothingFilter:
 
+    # TODO: tune
     def __init__(self):
         self.confidence_threshold = 0.3
         self.b = 5.0
@@ -50,7 +53,6 @@ class SmoothingFilter:
         self.prev_speed = np.zeros((17, 2))
         self.smoothed = np.zeros((17, 2))
 
-    # TODO: Tune
     def filter(self, output, frame_height, frame_width, sampling_period):
         
         if sampling_period <= 0.00001: 
@@ -96,7 +98,7 @@ class Visualiser:
             cv2.circle(frame, (int(smoothed[0, i, 0]), int(smoothed[0, i, 1])), 8, (255, 0, 0), -1)
 
 movenet_lightning = PoseEstimator('models/movenet/movenet_lightning.tflite')
-moving_average = SmoothingFilter()
+one_euro = SmoothingFilter()
 visualiser = Visualiser()
 
 # TODO: Make main function
@@ -111,7 +113,7 @@ while True:
         print("Failed to read")
         break
 
-    smoothed = moving_average.filter(movenet_lightning.detect(frame), frame_height, frame_width, frame_time)
+    smoothed = one_euro.filter(movenet_lightning.detect(frame), frame_height, frame_width, frame_time)
 
     visualiser.draw_keypoints(frame, smoothed)
 
