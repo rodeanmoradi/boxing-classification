@@ -7,7 +7,7 @@ import time
 
 # TODO: Make config file
 PI = 3.14
-cam = cv2.VideoCapture(1) # Pass 0 or 1
+cam = cv2.VideoCapture(0) # Pass 0 or 1
 frame_height = cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
 frame_width = cam.get(cv2.CAP_PROP_FRAME_WIDTH)
 prev_time = time.time()
@@ -82,7 +82,7 @@ class SmoothingFilter:
         self.prev_speed = np.where(mask, x_dot_hat, self.prev_speed)
         self.prev_points = np.where(mask, coords, self.prev_points)
         
-        return self.smoothed[np.newaxis, :, :]
+        return self.smoothed
 
 class Visualiser:
     
@@ -92,14 +92,38 @@ class Visualiser:
         
     def draw_keypoints(self, frame, smoothed):
         for (start, end) in self.connections:
-            cv2.line(frame, (int(smoothed[0, start, 0]), int(smoothed[0, start, 1])), 
-                     (int(smoothed[0, end, 0]), int(smoothed[0, end, 1])), (255, 0, 0), 3)
+            cv2.line(frame, (int(smoothed[start, 0]), int(smoothed[start, 1])), 
+                     (int(smoothed[end, 0]), int(smoothed[end, 1])), (255, 0, 0), 3)
         for i in range(17):
-            cv2.circle(frame, (int(smoothed[0, i, 0]), int(smoothed[0, i, 1])), 8, (255, 0, 0), -1)
+            cv2.circle(frame, (int(smoothed[i, 0]), int(smoothed[i, 1])), 8, (255, 0, 0), -1)
+
+class Buffer:
+    def __init__(self):
+        self.buffer = np.zeros((30, 17, 2))
+        self.index = 0    
+        self.n = 30  
+    
+    def normalize(self, smoothed):
+        hips_midpoint = (smoothed[11] + smoothed[12]) / 2
+        hip_width = np.linalg.norm(smoothed[12] - smoothed[11])
+        normalized = (smoothed - hips_midpoint) / (hip_width)
+
+        return normalized
+
+    def fill_buffer(self, smoothed):
+        normalized = self.normalize(smoothed)
+        self.buffer[self.index] = normalized
+        self.index = (self.index + 1) % self.n
+    
+    def order_buffer(self):
+        ordered = np.roll(self.buffer, -self.index, axis=0)
+
+        return ordered.reshape(1, 30, -1)
 
 movenet_lightning = PoseEstimator('models/movenet/movenet_lightning.tflite')
 one_euro = SmoothingFilter()
 visualiser = Visualiser()
+circular_buffer = Buffer()
 
 # TODO: Make main function
 while True:
@@ -116,6 +140,8 @@ while True:
     smoothed = one_euro.filter(movenet_lightning.detect(frame), frame_height, frame_width, frame_time)
 
     visualiser.draw_keypoints(frame, smoothed)
+
+    circular_buffer.fill_buffer(smoothed)
 
     cv2.imshow('MacBook Camera', frame)
 
