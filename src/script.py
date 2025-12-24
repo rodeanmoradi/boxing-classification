@@ -3,7 +3,6 @@ import tensorflow as tf
 import numpy as np
 import time
 
-# TODO: Make config file
 PI = 3.14
 cam = cv2.VideoCapture(0) # Pass 0 or 1
 frame_height = cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
@@ -117,7 +116,6 @@ class Buffer:
         if self.count < self.n:
             self.count += 1
     
-    # TODO: Check if buffer is filled before rolling
     def order_buffer(self):
         
         if self.count < self.n:
@@ -132,7 +130,6 @@ one_euro = SmoothingFilter()
 visualiser = Visualiser()
 circular_buffer = Buffer()
 
-# Make main function
 while True:
     current_time = time.time()
     frame_time = current_time - prev_time
