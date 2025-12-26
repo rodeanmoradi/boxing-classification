@@ -2,6 +2,8 @@ import cv2
 import tensorflow as tf
 import numpy as np
 import time
+import torch
+import torch.nn as nn
 
 PI = 3.14
 cam = cv2.VideoCapture(0) # Pass 0 or 1
@@ -124,6 +126,12 @@ class Buffer:
         ordered = np.roll(self.buffer, -self.index, axis=0)
 
         return ordered.reshape(1, 30, -1)
+
+class LSTM(nn.Module):
+
+    def __init__(self):
+        super().__init__()
+
 
 movenet_lightning = PoseEstimator('models/movenet/movenet_lightning.tflite')
 one_euro = SmoothingFilter()
