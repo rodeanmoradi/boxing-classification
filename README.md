@@ -1,1 +1,1 @@
-in progress
+in progress: training LSTM model used for punch classification
