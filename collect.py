@@ -14,7 +14,6 @@ def main():
     hook_count = 0
     uppercut_count = 0
 
-
     movenet_lightning = PoseEstimator('models/movenet/movenet_lightning.tflite')
     one_euro = SmoothingFilter()
     visualiser = Visualiser()
@@ -33,23 +32,24 @@ def main():
             break
 
         smoothed = one_euro.filter(movenet_lightning.detect(frame), frame_height, frame_width, frame_time)
-
         visualiser.draw_keypoints(frame, smoothed)
-
         circular_buffer.fill_buffer(smoothed)
 
         if key == ord('j'):
             time.sleep(5)
             np.save(f'data/raw/jab/jab_{jab_count}.npy', circular_buffer.order_buffer())
             jab_count += 1
+
         elif key == ord('c'):
             time.sleep(5)
             np.save(f'data/raw/cross/cross_{cross_count}.npy', circular_buffer.order_buffer())
             cross_count += 1
+
         elif key == ord('h'):
             time.sleep(5)
             np.save(f'data/raw/hook/hook_{hook_count}.npy', circular_buffer.order_buffer())
             hook_count += 1
+            
         elif key == ord('u'):
             time.sleep(5)
             np.save(f'data/raw/uppercut/uppercut_{uppercut_count}.npy', circular_buffer.order_buffer())

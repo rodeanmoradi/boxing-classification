@@ -26,11 +26,9 @@ def main():
             break
 
         smoothed = one_euro.filter(movenet_lightning.detect(frame), frame_height, frame_width, frame_time)
-
         visualiser.draw_keypoints(frame, smoothed)
-
         circular_buffer.fill_buffer(smoothed)
-
+        
         cv2.imshow('MacBook Camera', frame)
 
         if cv2.waitKey(1) == ord('x'):
