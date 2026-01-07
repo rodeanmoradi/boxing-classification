@@ -4,7 +4,7 @@ from src import PoseEstimator, SmoothingFilter, Visualiser, Buffer
 
 def main():
 
-    cam = cv2.VideoCapture(1) # Pass 0 or 1
+    cam = cv2.VideoCapture(1) # 0 or 1
     frame_height = cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
     frame_width = cam.get(cv2.CAP_PROP_FRAME_WIDTH)
     prev_time = time.time()
@@ -28,7 +28,7 @@ def main():
         smoothed = one_euro.filter(movenet_lightning.detect(frame), frame_height, frame_width, frame_time)
         visualiser.draw_keypoints(frame, smoothed)
         circular_buffer.fill_buffer(smoothed)
-        
+
         cv2.imshow('MacBook Camera', frame)
 
         if cv2.waitKey(1) == ord('x'):
