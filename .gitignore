@@ -2,3 +2,4 @@
 movenet_thunder.tflite
 movenet_lightning.tflite
 .DS_Store
+__pycache__
