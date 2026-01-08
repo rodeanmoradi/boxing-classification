@@ -1,3 +1,4 @@
+# TODO: Collect data
 import cv2
 import time
 import numpy as np
@@ -49,7 +50,7 @@ def main():
             time.sleep(5)
             np.save(f'data/raw/hook/hook_{hook_count}.npy', circular_buffer.order_buffer())
             hook_count += 1
-            
+
         elif key == ord('u'):
             time.sleep(5)
             np.save(f'data/raw/uppercut/uppercut_{uppercut_count}.npy', circular_buffer.order_buffer())
