@@ -4,12 +4,11 @@ PI = 3.14
 
 class SmoothingFilter:
 
-    # TODO: Tune params to ensure perfect smoothing for LSTM input
     def __init__(self):
-        self.confidence_threshold = 0.4 # Can raise to 0.4/0.5
-        self.b = 10.0 # 1.0 - 5.0 -> less adaption to speed changes, 5.0 - 20 -> More aggressive tracking during fast movements
-        self.f_c_min = 2.0 # 0.5 - 1.0 -> More smoothing, more lag, 1.0 - 3.0 -> less lag, less smoothing
-        self.f_c_d = 0.5 # 0.1 - 0.5 -> Smoother velocity, more stable, 0.5 - 2.0 -> Noisier velocity, more reactive
+        self.confidence_threshold = 0.3 
+        self.b = 0.1 
+        self.f_c_min = 1.2 
+        self.f_c_d = 1.0 
         self.prev_points = np.zeros((17, 2))
         self.prev_speed = np.zeros((17, 2))
         self.smoothed = np.zeros((17, 2))
