@@ -9,8 +9,9 @@ class Buffer:
     
     def normalize(self, smoothed):
         hips_midpoint = (smoothed[11] + smoothed[12]) / 2
-        hip_width = np.linalg.norm(smoothed[12] - smoothed[11])
-        normalized = (smoothed - hips_midpoint) / (hip_width)
+        shoulders_midpoint = (smoothed[5] + smoothed[6]) / 2
+        torso_length = np.linalg.norm(shoulders_midpoint - hips_midpoint)
+        normalized = (smoothed - hips_midpoint) / (torso_length)
 
         return normalized
 
