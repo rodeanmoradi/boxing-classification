@@ -5,14 +5,16 @@ from src import PoseEstimator, SmoothingFilter, Visualiser, Buffer
 
 def main():
 
-    cam = cv2.VideoCapture(1)
+    cam = cv2.VideoCapture(0)
     frame_height = cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
     frame_width = cam.get(cv2.CAP_PROP_FRAME_WIDTH)
     prev_time = time.time()
+    elapsed_time = 0
     jab_count = 0
     cross_count = 0
     hook_count = 0
     uppercut_count = 0
+    start_countdown = False
 
     movenet_lightning = PoseEstimator('models/movenet/movenet_lightning.tflite')
     one_euro = SmoothingFilter()
@@ -34,26 +36,18 @@ def main():
         smoothed = one_euro.filter(movenet_lightning.detect(frame), frame_height, frame_width, frame_time)
         visualiser.draw_keypoints(frame, smoothed)
         circular_buffer.fill_buffer(smoothed)
-
+        
         if key == ord('j'):
-            time.sleep(5)
+            start_countdown = True
+
+        if start_countdown == True:
+            elapsed_time += frame_time
+        
+        if elapsed_time >= 5:
             np.save(f'data/raw/jab/jab_{jab_count}.npy', circular_buffer.order_buffer())
             jab_count += 1
-
-        elif key == ord('c'):
-            time.sleep(5)
-            np.save(f'data/raw/cross/cross_{cross_count}.npy', circular_buffer.order_buffer())
-            cross_count += 1
-
-        elif key == ord('h'):
-            time.sleep(5)
-            np.save(f'data/raw/hook/hook_{hook_count}.npy', circular_buffer.order_buffer())
-            hook_count += 1
-
-        elif key == ord('u'):
-            time.sleep(5)
-            np.save(f'data/raw/uppercut/uppercut_{uppercut_count}.npy', circular_buffer.order_buffer())
-            uppercut_count += 1
+            start_countdown = False
+            elapsed_time = 0
 
         cv2.imshow('MacBook Camera', frame)
 
