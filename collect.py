@@ -10,10 +10,7 @@ def main():
     frame_width = cam.get(cv2.CAP_PROP_FRAME_WIDTH)
     prev_time = time.time()
     elapsed_time = 0
-    jab_count = 0
-    cross_count = 0
-    hook_count = 0
-    uppercut_count = 0
+    jab_count = 50
     start_countdown = False
 
     movenet_lightning = PoseEstimator('models/movenet/movenet_lightning.tflite')
