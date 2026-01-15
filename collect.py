@@ -5,7 +5,7 @@ from src import PoseEstimator, SmoothingFilter, Visualiser, Buffer
 
 def main():
 
-    cam = cv2.VideoCapture(0)
+    cam = cv2.VideoCapture(1)
     frame_height = cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
     frame_width = cam.get(cv2.CAP_PROP_FRAME_WIDTH)
     prev_time = time.time()
