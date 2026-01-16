@@ -10,7 +10,7 @@ def main():
     frame_width = cam.get(cv2.CAP_PROP_FRAME_WIDTH)
     prev_time = time.time()
     elapsed_time = 0
-    jab_count = 0
+    count = 0
     start_countdown = False
 
     movenet_lightning = PoseEstimator('models/movenet/movenet_lightning.tflite')
@@ -34,16 +34,16 @@ def main():
         visualiser.draw_keypoints(frame, smoothed)
         circular_buffer.fill_buffer(smoothed)
         
-        if key == ord('j'):
+        if key == ord('c'):
             start_countdown = True
 
         if start_countdown == True:
             elapsed_time += frame_time
-            cv2.putText(frame, f'{elapsed_time}', ((50), (100)), cv2.FONT_HERSHEY_SIMPLEX, 3.0, (0, 255, 0), 3)
+            cv2.putText(frame, f'{elapsed_time}', ((50), (100)), cv2.FONT_HERSHEY_SIMPLEX, 3.0, (255, 0, 0), 3)
         
         if elapsed_time >= 5:
-            np.save(f'data/raw/jab/jab_{jab_count}.npy', circular_buffer.order_buffer())
-            jab_count += 1
+            np.save(f'data/raw/cross/cross_{count}.npy', circular_buffer.order_buffer())
+            count += 1
             start_countdown = False
             elapsed_time = 0
 
