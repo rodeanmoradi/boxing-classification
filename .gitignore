@@ -1,6 +1,5 @@
 .venv/
-movenet_thunder.tflite
-movenet_lightning.tflite
+models
 .DS_Store
 __pycache__
 data
