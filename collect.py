@@ -42,7 +42,7 @@ def main():
             cv2.putText(frame, f'{elapsed_time}', ((50), (100)), cv2.FONT_HERSHEY_SIMPLEX, 3.0, (255, 0, 0), 3)
         
         if elapsed_time >= 5:
-            np.save(f'data/raw/cross/cross_{count}.npy', circular_buffer.order_buffer())
+            np.save(f'data/cross/cross_{count}.npy', circular_buffer.order_buffer())
             count += 1
             start_countdown = False
             elapsed_time = 0
