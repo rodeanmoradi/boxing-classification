@@ -39,7 +39,7 @@ def main():
 
         if start_countdown == True:
             elapsed_time += frame_time
-            cv2.putText(frame, f'{elapsed_time}', ((50), (100)), cv2.FONT_HERSHEY_SIMPLEX, 3.0, (255, 0, 0), 3)
+            cv2.putText(frame, f'{elapsed_time}', (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 3.0, (255, 0, 0), 3)
         
         if elapsed_time >= 5:
             np.save(f'data/cross/cross_{count}.npy', circular_buffer.order_buffer())
