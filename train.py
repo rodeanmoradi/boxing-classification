@@ -41,7 +41,7 @@ loss_function = nn.CrossEntropyLoss()
 
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
-# training loop -> forward pass, calculate loss, backward pass, update weights -> print accuracy for each epoch
+# TODO: training loop -> forward pass, calculate loss, backward pass, update weights -> print accuracy for each epoch
 
 # validation loop -> print accuracy
 
