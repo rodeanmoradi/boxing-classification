@@ -29,11 +29,8 @@ val_samples = torch.from_numpy(samples[164:]).float()
 training_labels = torch.from_numpy(labels[:164]).long()
 val_labels = torch.from_numpy(labels[164:]).long()
 
-training_set = TensorDataset(training_samples, training_labels)
-val_set = TensorDataset(val_samples, val_labels)
-
-training_loader = DataLoader(training_set, 16, shuffle=True)
-val_loader = DataLoader(val_set, 16, shuffle=False)
+training_loader = DataLoader(TensorDataset(training_samples, training_labels), 16, shuffle=True)
+val_loader = DataLoader(TensorDataset(val_samples, val_labels), 16, shuffle=False)
 
 model = LSTM(34, 32, 1, 2)
 
@@ -41,8 +38,22 @@ loss_function = nn.CrossEntropyLoss()
 
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
-# TODO: training loop -> forward pass, calculate loss, backward pass, update weights -> print accuracy for each epoch
+for epoch in range(0, 31):
+    model.train()
+    for X_training, y_training in training_loader:
+        # Forward pass
+        output = model(X_training)
+        # Calculate loss
+        loss = loss_function(output, y_training)
+        # Zero gradients
+        optimizer.zero_grad()
+        # Backward pass
+        loss.backward()
+        # Update weights
+        optimizer.step()
+        # Track accuracy
 
-# validation loop -> print accuracy
-
-# once validation accuracy is best, save model
+    #model.eval()
+    #for X_val, y_val in val_loader:
+        # Forward pass
+        # Calculate accuracy
