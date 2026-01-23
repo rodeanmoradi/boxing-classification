@@ -1,5 +1,5 @@
 import numpy as np
-import torch as pt
+import torch
 import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
 from src import LSTM
@@ -18,17 +18,16 @@ nones = np.array(nones)
 samples = np.concatenate((jabs, nones))
 labels = np.concatenate((np.ones(103), np.zeros(102)))
 
-indices = np.random.permutation(205)
-
 # Randomize order
+indices = np.random.permutation(205)
 samples = samples[indices]
 labels = labels[indices]
 
 # Convert from np arrays to PyTorch tensors
-training_samples = pt.from_numpy(samples[:164]).float()
-val_samples = pt.from_numpy(samples[164:]).float()
-training_labels = pt.from_numpy(labels[:164]).long()
-val_labels = pt.from_numpy(labels[164:]).long()
+training_samples = torch.from_numpy(samples[:164]).float()
+val_samples = torch.from_numpy(samples[164:]).float()
+training_labels = torch.from_numpy(labels[:164]).long()
+val_labels = torch.from_numpy(labels[164:]).long()
 
 training_set = TensorDataset(training_samples, training_labels)
 val_set = TensorDataset(val_samples, val_labels)
@@ -36,11 +35,11 @@ val_set = TensorDataset(val_samples, val_labels)
 training_loader = DataLoader(training_set, 16, shuffle=True)
 val_loader = DataLoader(val_set, 16, shuffle=False)
 
-# Initialize model -> choose hidden_size and num_layers
+model = LSTM(34, 32, 1, 2)
 
-# Loss function
+loss_function = nn.CrossEntropyLoss()
 
-# Optimizer to minimze loss
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
 # training loop -> forward pass, calculate loss, backward pass, update weights -> print accuracy for each epoch
 
