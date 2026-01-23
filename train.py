@@ -23,9 +23,9 @@ indices = np.random.permutation(205)
 samples = samples[indices]
 labels = labels[indices]
 
-# Convert from np arrays to PyTorch tensors
-training_samples = torch.from_numpy(samples[:164]).float()
-val_samples = torch.from_numpy(samples[164:]).float()
+# Convert from np arrays to PyTorch tensors, split into training and val
+training_samples = torch.from_numpy(samples[:164]).float().squeeze(1)
+val_samples = torch.from_numpy(samples[164:]).float().squeeze(1)
 training_labels = torch.from_numpy(labels[:164]).long()
 val_labels = torch.from_numpy(labels[164:]).long()
 
@@ -38,8 +38,11 @@ loss_function = nn.CrossEntropyLoss()
 
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
+highest_accuracy = 0
 for epoch in range(0, 31):
     model.train()
+    correct_training_guesses = 0
+    num_training_samples = 164
     for X_training, y_training in training_loader:
         # Forward pass
         output = model(X_training)
@@ -51,9 +54,26 @@ for epoch in range(0, 31):
         loss.backward()
         # Update weights
         optimizer.step()
-        # Track accuracy
+        # Convert logits to classification
+        classification = torch.argmax(output, dim=1)
+        # Compare all classifications to y at once
+        correct_training_guesses += torch.sum(classification == y_training).item() 
+    training_accuracy = correct_training_guesses / num_training_samples
+    print(f'Epoch: {epoch}, Training Accuracy: {training_accuracy}')
 
-    #model.eval()
-    #for X_val, y_val in val_loader:
-        # Forward pass
-        # Calculate accuracy
+    model.eval()
+    correct_val_guesses = 0
+    num_val_samples = 41
+    with torch.no_grad():
+        for X_val, y_val in val_loader:
+            output = model(X_val)
+            # Calculate accuracy
+            classification = torch.argmax(output, dim=1)
+            correct_val_guesses += torch.sum(classification == y_val).item()
+    val_accuracy = correct_val_guesses / num_val_samples
+
+    print(f'Epoch: {epoch}, Validation Accuracy: {val_accuracy}')
+
+    if val_accuracy > highest_accuracy:
+        highest_accuracy = val_accuracy
+        torch.save(model.state_dict(), 'models/LSTM_model.pth')
