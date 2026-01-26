@@ -4,11 +4,7 @@ A computer vision system that detects boxing punches in real-time using pose est
 
 # Prototype
 
-
-
-https://github.com/user-attachments/assets/92743ee6-c182-4d41-ae53-3a991b77ff98
-
-
+https://github.com/user-attachments/assets/e75c4496-5c67-4d86-a235-15279aff2dde
 
 # System Architecture
 
