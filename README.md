@@ -2,7 +2,11 @@
 
 A computer vision system that detects boxing punches in real-time using pose estimation and deep learning. The system captures video from a webcam, extracts skeletal keypoints using MoveNet, smoothes the data, and classifies action sequences using a custom PyTorch LSTM. This project is still in progress, and is only capable of classifying jabs.
 
-# Prototype/Proof-of-Concept
+# Prototype
+
+
+
+https://github.com/user-attachments/assets/92743ee6-c182-4d41-ae53-3a991b77ff98
 
 
 
