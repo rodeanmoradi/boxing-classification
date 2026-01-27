@@ -1,6 +1,6 @@
 # Real-Time Boxing Punch Classification
 
-A computer vision system that detects punches in real-time using pose estimation and deep learning. The system captures video from a webcam, extracts skeletal keypoints using MoveNet, smoothes the data, and classifies action sequences using a custom PyTorch LSTM. At the moment, the model is only capable of classifying jabs.
+A computer vision system that detects punches in real-time using pose estimation and deep learning. The system captures video from a webcam, extracts skeletal keypoints using MoveNet, smoothes the data with a One Euro filter, and classifies action sequences using a custom PyTorch LSTM. At the moment, the model is only capable of classifying jabs.
 
 # Demo
 
