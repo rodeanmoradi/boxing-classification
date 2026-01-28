@@ -1,7 +1,7 @@
 import cv2
 import time
-import numpy as np
 import torch
+import torch.nn as nn
 from src import PoseEstimator, SmoothingFilter, Visualiser, Buffer, LSTM
 
 def main():
@@ -15,7 +15,7 @@ def main():
     one_euro = SmoothingFilter()
     visualiser = Visualiser()
     circular_buffer = Buffer()
-    model = LSTM(34, 32, 1, 2)
+    model = LSTM(34, 32, 1, 3)
 
     # Load model
     model_dict = torch.load('models/LSTM_model.pth')
@@ -43,13 +43,18 @@ def main():
 
             if buffer is not None:
                 output = model(torch.from_numpy(buffer).float())
-                # Convert logits to 0 (none) or 1 (jab)
-                classification = torch.argmax(output, dim=1)
-                if classification == 0:
-                    cv2.putText(frame, f'No punch', (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 3.0, (255, 0, 0), 3)
-
-                if classification == 1:
+                # Get probabilities and classification
+                probabilities = nn.functional.softmax(output, dim=1)
+                highest_probability, index = torch.max(probabilities, dim=1)
+                
+                if index == 1 and highest_probability >= 0.7:
                     cv2.putText(frame, f'Jab detected', (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 3.0, (255, 0, 0), 3)
+
+                elif index == 2 and highest_probability >= 0.7:
+                    cv2.putText(frame, f'Uppercut detected', (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 3.0, (255, 0, 0), 3)
+
+                else:
+                    cv2.putText(frame, f'No punch', (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 3.0, (255, 0, 0), 3)
 
             cv2.imshow('MacBook Camera', frame)
 

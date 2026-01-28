@@ -5,7 +5,7 @@ PI = np.pi
 class SmoothingFilter:
 
     def __init__(self):
-        self.confidence_threshold = 0.15 
+        self.confidence_threshold = 0.18 
         self.b = 0.1 
         self.f_c_min = 1.2 
         self.f_c_d = 1.0 

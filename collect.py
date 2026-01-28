@@ -34,15 +34,16 @@ def main():
         visualiser.draw_keypoints(frame, smoothed)
         circular_buffer.fill_buffer(smoothed)
         
-        if key == ord('c'):
+        if key == ord('u'):
             start_countdown = True
 
         if start_countdown == True:
             elapsed_time += frame_time
             cv2.putText(frame, f'{elapsed_time}', (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 3.0, (255, 0, 0), 3)
         
+        # Start punching when elapsed time = 4 because last 1 second is recorded
         if elapsed_time >= 5:
-            np.save(f'data/cross/cross_{count}.npy', circular_buffer.order_buffer())
+            np.save(f'data/uppercut/uppercut_{count}.npy', circular_buffer.order_buffer())
             count += 1
             start_countdown = False
             elapsed_time = 0
