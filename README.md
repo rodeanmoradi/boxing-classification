@@ -20,7 +20,7 @@ https://github.com/user-attachments/assets/5d2aeee1-7c83-49ae-8768-1b60b96f2385
 # Stack
 
 * **Language**: Python 3.9+
-* **Deep Learning**: PyTorch (LSTM Training & Inference)
+* **Deep Learning**: PyTorch (LSTM training & inference)
 * **Pose Estimation**: TensorFlow Lite (MoveNet)
-* **Computer Vision**: OpenCV (Video capture & Visualization)
-* **Data Handling**: NumPy (Buffer management, smoothing filter)
+* **Computer Vision**: OpenCV (Video capture & visualization)
+* **Data Handling**: NumPy (Buffer management & smoothing filter)
