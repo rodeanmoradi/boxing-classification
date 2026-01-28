@@ -43,7 +43,10 @@ def main():
 
             if buffer is not None:
                 output = model(torch.from_numpy(buffer).float())
-                # Get probabilities and classification
+
+                # Get probabilities using softmax -> this is a better approach than using argmax because a probability threshold can
+                # be used rather than assuming the highest logit is a valid classification -> with softmax, only high probability
+                # classifications are accepted
                 probabilities = nn.functional.softmax(output, dim=1)
                 highest_probability, index = torch.max(probabilities, dim=1)
                 
