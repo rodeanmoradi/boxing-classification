@@ -23,4 +23,4 @@ https://github.com/user-attachments/assets/5d2aeee1-7c83-49ae-8768-1b60b96f2385
 * **Deep Learning**: PyTorch (LSTM Training & Inference)
 * **Pose Estimation**: TensorFlow Lite (MoveNet)
 * **Computer Vision**: OpenCV (Video capture & Visualization)
-* **Data Handling**: NumPy (Buffer management)
+* **Data Handling**: NumPy (Buffer management, smoothing filter)
