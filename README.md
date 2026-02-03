@@ -24,3 +24,7 @@ https://github.com/user-attachments/assets/5d2aeee1-7c83-49ae-8768-1b60b96f2385
 * **Pose Estimation**: TensorFlow Lite (MoveNet)
 * **Computer Vision**: OpenCV (Video capture & visualization)
 * **Data Handling**: NumPy (Buffer management & smoothing filter)
+
+# Lessons Learned
+
+* I should have done much more research before fully committing to the project. My research wasn't horrible, but if I had just revised my architecture a bit more before beginning, my life would have been a lot easier. I spent a lot of time on the One Euro filter for smoothing the MoveNet keypoints, when I could've just used MediaPipe like a normal person from the start. MediaPipe handles smoothing and even provides 3D coordinates. Fortunately, the difficulty of implementing the smoothing on my own allowed me to build my skills, so I guess it's not that deep.
